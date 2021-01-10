@@ -1,4 +1,4 @@
-#if UNITY_ECS
+#if UNITY_5 || UNITY_5_3_OR_NEWER
 using Svelto.ECS.Hybrid;
 using UnityEngine;
 
@@ -6,7 +6,7 @@ namespace Svelto.ECS.Extensions.Unity
 {
     public static class EntityDescriptorHolderHelper
     {
-        public static EntityComponentInitializer CreateEntity<T>(this Transform contextHolder, EGID ID,
+        public static EntityInitializer CreateEntity<T>(this Transform contextHolder, EGID ID,
                                                                  IEntityFactory factory, out T holder)
             where T : MonoBehaviour, IEntityDescriptorHolder
         {
@@ -16,7 +16,7 @@ namespace Svelto.ECS.Extensions.Unity
             return factory.BuildEntity(ID, holder.GetDescriptor(), implementors);
         }
         
-        public static EntityComponentInitializer Create<T>(this Transform contextHolder, EGID ID,
+        public static EntityInitializer Create<T>(this Transform contextHolder, EGID ID,
                                                            IEntityFactory factory)
             where T : MonoBehaviour, IEntityDescriptorHolder
         {

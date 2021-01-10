@@ -14,19 +14,19 @@ namespace Svelto.ECS
             _addOperationQueue = addOperationQueue;
         }
 
-        public NativeEntityComponentInitializer BuildEntity
-            (uint eindex, BuildGroup BuildGroup, int threadIndex)
+        public NativeEntityInitializer BuildEntity
+            (uint eindex, ExclusiveBuildGroup exclusiveBuildGroup, int threadIndex)
         {
             NativeBag unsafeBuffer = _addOperationQueue.GetBuffer(threadIndex + 1);
 
             unsafeBuffer.Enqueue(_index);
-            unsafeBuffer.Enqueue(new EGID(eindex, BuildGroup));
+            unsafeBuffer.Enqueue(new EGID(eindex, exclusiveBuildGroup));
             unsafeBuffer.ReserveEnqueue<uint>(out var index) = 0;
 
-            return new NativeEntityComponentInitializer(unsafeBuffer, index);
+            return new NativeEntityInitializer(unsafeBuffer, index);
         }
         
-        public NativeEntityComponentInitializer BuildEntity(EGID egid, int threadIndex)
+        public NativeEntityInitializer BuildEntity(EGID egid, int threadIndex)
         {
             NativeBag unsafeBuffer = _addOperationQueue.GetBuffer(threadIndex + 1);
 
@@ -34,7 +34,7 @@ namespace Svelto.ECS
             unsafeBuffer.Enqueue(new EGID(egid.entityID, egid.groupID));
             unsafeBuffer.ReserveEnqueue<uint>(out var index) = 0;
 
-            return new NativeEntityComponentInitializer(unsafeBuffer, index);
+            return new NativeEntityInitializer(unsafeBuffer, index);
         }
     }
 }

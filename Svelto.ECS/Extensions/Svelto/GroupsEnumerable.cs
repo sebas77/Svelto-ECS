@@ -17,9 +17,6 @@ namespace Svelto.ECS
                                                                 where T3 : struct, IEntityComponent
                                                                 where T4 : struct, IEntityComponent
     {
-        readonly EntitiesDB                                    _db;
-        readonly LocalFasterReadOnlyList<ExclusiveGroupStruct> _groups;
-
         public GroupsEnumerable(EntitiesDB db, in LocalFasterReadOnlyList<ExclusiveGroupStruct> groups)
         {
             _db     = db;
@@ -52,7 +49,8 @@ namespace Svelto.ECS
 
                     var array  = entityCollection1;
                     var array2 = entityCollection2;
-                    _buffers = new EntityCollection<T1, T2, T3, T4>(array.buffer1, array.buffer2, array.buffer3, array2);
+                    _buffers = new EntityCollection<T1, T2, T3, T4>(array.buffer1, array.buffer2, array.buffer3
+                                                                  , array2);
                     break;
                 }
 
@@ -66,7 +64,8 @@ namespace Svelto.ECS
 
             public void Reset() { _indexGroup = -1; }
 
-            public RefCurrent<T1, T2, T3, T4> Current => new RefCurrent<T1, T2, T3, T4>(_buffers, _groups[_indexGroup]);
+            public RefCurrent Current => new RefCurrent(_buffers, _groups[_indexGroup]);
+            public bool       isValid => _indexGroup != -1;
 
             readonly LocalFasterReadOnlyList<ExclusiveGroupStruct> _groups;
 
@@ -76,44 +75,36 @@ namespace Svelto.ECS
         }
 
         public GroupsIterator GetEnumerator() { return new GroupsIterator(_db, _groups); }
+
+        readonly EntitiesDB                                    _db;
+        readonly LocalFasterReadOnlyList<ExclusiveGroupStruct> _groups;
+
+        public ref struct RefCurrent
+        {
+            public RefCurrent(in EntityCollection<T1, T2, T3, T4> buffers, ExclusiveGroupStruct group)
+            {
+                _buffers = buffers;
+                _group   = group;
+            }
+
+            public void Deconstruct(out EntityCollection<T1, T2, T3, T4> buffers, out ExclusiveGroupStruct group)
+            {
+                buffers = _buffers;
+                group   = _group;
+            }
+
+            public readonly EntityCollection<T1, T2, T3, T4> _buffers;
+            public readonly ExclusiveGroupStruct             _group;
+        }
     }
 
-    public ref struct RefCurrent<T1, T2, T3, T4> where T1 : struct, IEntityComponent
-                                                 where T2 : struct, IEntityComponent
-                                                 where T3 : struct, IEntityComponent
-                                                 where T4 : struct, IEntityComponent
-    {
-        public RefCurrent(in EntityCollection<T1, T2, T3, T4> buffers, ExclusiveGroupStruct group)
-        {
-            _buffers = buffers;
-            _group   = group;
-        }
-
-        public void Deconstruct(out EntityCollection<T1, T2, T3, T4> buffers, out ExclusiveGroupStruct group)
-        {
-            buffers = _buffers;
-            group   = _group;
-        }
-
-        public readonly EntityCollection<T1, T2, T3, T4> _buffers;
-        public readonly ExclusiveGroupStruct             _group;
-    }
-
-    /// <summary>
-    ///     ToDo source gen could return the implementation of IBuffer directly, but cannot be done manually
-    /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <typeparam name="T3"></typeparam>
     public readonly ref struct GroupsEnumerable<T1, T2, T3> where T1 : struct, IEntityComponent
                                                             where T2 : struct, IEntityComponent
                                                             where T3 : struct, IEntityComponent
     {
-        readonly EntitiesDB                                    _db;
-        readonly LocalFasterReadOnlyList<ExclusiveGroupStruct> _groups;
-
         public GroupsEnumerable(EntitiesDB db, in LocalFasterReadOnlyList<ExclusiveGroupStruct> groups)
         {
+            DBC.ECS.Check.Require(groups.count > 0, "can't initialise a query without valid groups");
             _db     = db;
             _groups = groups;
         }
@@ -150,7 +141,8 @@ namespace Svelto.ECS
 
             public void Reset() { _indexGroup = -1; }
 
-            public RefCurrent<T1, T2, T3> Current => new RefCurrent<T1, T2, T3>(_buffers, _groups[_indexGroup]);
+            public RefCurrent Current => new RefCurrent(_buffers, _groups[_indexGroup]);
+            public bool       isValid => _indexGroup != -1;
 
             readonly LocalFasterReadOnlyList<ExclusiveGroupStruct> _groups;
 
@@ -160,26 +152,27 @@ namespace Svelto.ECS
         }
 
         public GroupsIterator GetEnumerator() { return new GroupsIterator(_db, _groups); }
-    }
 
-    public ref struct RefCurrent<T1, T2, T3> where T1 : struct, IEntityComponent
-                                             where T2 : struct, IEntityComponent
-                                             where T3 : struct, IEntityComponent
-    {
-        public RefCurrent(in EntityCollection<T1, T2, T3> buffers, ExclusiveGroupStruct group)
+        readonly EntitiesDB                                    _db;
+        readonly LocalFasterReadOnlyList<ExclusiveGroupStruct> _groups;
+
+        public ref struct RefCurrent
         {
-            _buffers = buffers;
-            _group   = group;
-        }
+            public RefCurrent(in EntityCollection<T1, T2, T3> buffers, ExclusiveGroupStruct group)
+            {
+                _buffers = buffers;
+                _group   = group;
+            }
 
-        public void Deconstruct(out EntityCollection<T1, T2, T3> buffers, out ExclusiveGroupStruct group)
-        {
-            buffers = _buffers;
-            group   = _group;
-        }
+            public void Deconstruct(out EntityCollection<T1, T2, T3> buffers, out ExclusiveGroupStruct group)
+            {
+                buffers = _buffers;
+                group   = _group;
+            }
 
-        public readonly EntityCollection<T1, T2, T3> _buffers;
-        public readonly ExclusiveGroupStruct         _group;
+            public readonly EntityCollection<T1, T2, T3> _buffers;
+            public readonly ExclusiveGroupStruct         _group;
+        }
     }
 
     public readonly ref struct GroupsEnumerable<T1, T2>
@@ -223,7 +216,8 @@ namespace Svelto.ECS
 
             public void Reset() { _indexGroup = -1; }
 
-            public RefCurrent<T1, T2> Current => new RefCurrent<T1, T2>(_buffers, _groups[_indexGroup]);
+            public RefCurrent Current => new RefCurrent(_buffers, _groups[_indexGroup]);
+            public bool       isValid => _indexGroup != -1;
 
             readonly EntitiesDB                                    _db;
             readonly LocalFasterReadOnlyList<ExclusiveGroupStruct> _groups;
@@ -236,24 +230,24 @@ namespace Svelto.ECS
 
         readonly EntitiesDB                                    _db;
         readonly LocalFasterReadOnlyList<ExclusiveGroupStruct> _groups;
-    }
 
-    public ref struct RefCurrent<T1, T2> where T1 : struct, IEntityComponent where T2 : struct, IEntityComponent
-    {
-        public RefCurrent(in EntityCollection<T1, T2> buffers, ExclusiveGroupStruct group)
+        public ref struct RefCurrent
         {
-            _buffers = buffers;
-            _group   = group;
-        }
+            public RefCurrent(in EntityCollection<T1, T2> buffers, ExclusiveGroupStruct group)
+            {
+                _buffers = buffers;
+                _group   = group;
+            }
 
-        public void Deconstruct(out EntityCollection<T1, T2> buffers, out ExclusiveGroupStruct group)
-        {
-            buffers = _buffers;
-            group   = _group;
-        }
+            public void Deconstruct(out EntityCollection<T1, T2> buffers, out ExclusiveGroupStruct group)
+            {
+                buffers = _buffers;
+                group   = _group;
+            }
 
-        public readonly EntityCollection<T1, T2> _buffers;
-        public readonly ExclusiveGroupStruct     _group;
+            public readonly EntityCollection<T1, T2> _buffers;
+            public readonly ExclusiveGroupStruct     _group;
+        }
     }
 
     public readonly ref struct GroupsEnumerable<T1> where T1 : struct, IEntityComponent
@@ -285,13 +279,19 @@ namespace Svelto.ECS
                     _buffer = entityCollection;
                     break;
                 }
+                
+                var moveNext = _indexGroup < _groups.count;
 
-                return _indexGroup < _groups.count;
+                if (moveNext == false)
+                    Reset();
+
+                return moveNext;
             }
 
             public void Reset() { _indexGroup = -1; }
 
-            public RefCurrent<T1> Current => new RefCurrent<T1>(_buffer, _groups[_indexGroup]);
+            public RefCurrent Current => new RefCurrent(_buffer, _groups[_indexGroup]);
+            public bool       isValid => _indexGroup != -1;
 
             readonly EntitiesDB                                    _db;
             readonly LocalFasterReadOnlyList<ExclusiveGroupStruct> _groups;
@@ -304,23 +304,28 @@ namespace Svelto.ECS
 
         readonly EntitiesDB                                    _db;
         readonly LocalFasterReadOnlyList<ExclusiveGroupStruct> _groups;
-    }
 
-    public ref struct RefCurrent<T1> where T1 : struct, IEntityComponent
-    {
-        public RefCurrent(in EntityCollection<T1> buffers, ExclusiveGroupStruct group)
+        public readonly ref struct RefCurrent
         {
-            _buffers = buffers;
-            _group   = group;
-        }
+            public RefCurrent(in EntityCollection<T1> buffers, in ExclusiveGroupStruct group)
+            {
+                _buffers = buffers;
+                _group   = group;
+            }
 
-        public void Deconstruct(out EntityCollection<T1> buffers, out ExclusiveGroupStruct group)
-        {
-            buffers = _buffers;
-            group   = _group;
-        }
+            public void Deconstruct(out EntityCollection<T1> buffers, out ExclusiveGroupStruct group)
+            {
+                buffers = _buffers;
+                group   = _group;
+            }
+            
+            public void Deconstruct(out EntityCollection<T1> buffers)
+            {
+                buffers = _buffers;
+            }
 
-        public readonly EntityCollection<T1> _buffers;
-        public readonly ExclusiveGroupStruct _group;
+            public readonly EntityCollection<T1> _buffers;
+            public readonly ExclusiveGroupStruct _group;
+        }
     }
 }

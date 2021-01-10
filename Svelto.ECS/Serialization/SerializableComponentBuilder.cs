@@ -55,7 +55,7 @@ namespace Svelto.ECS.Serialization
         }
 
         public void Deserialize
-        (ISerializationData serializationData, in EntityComponentInitializer initializer
+        (ISerializationData serializationData, in EntityInitializer initializer
        , int serializationType)
         {
             IComponentSerializer<T> componentSerializer = _serializers[(int) serializationType];

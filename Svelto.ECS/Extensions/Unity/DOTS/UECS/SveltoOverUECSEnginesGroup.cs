@@ -6,19 +6,35 @@ using Unity.Jobs;
 
 namespace Svelto.ECS.Extensions.Unity
 {
+    /// <summary>
+    /// This is a high level class to abstract the complexity of creating a Svelto ECS application that interacts
+    /// with UECS. However this is designed to make it work almost out of the box, but it should be eventually
+    /// substituted by project customized code.
+    /// This is a JobifiedEngine and as such it expect to be ticked. Normally it must be executed in a
+    /// SortedEnginesGroup as step that happens after the Svelto jobified engines run. The flow should be:
+    /// Svelto Engines Run
+    /// This Engine runs, which causeS:
+    /// Jobs to be completed (it's a sync point)
+    /// Synchronizations engines to be executed (Svelto to UECS)
+    /// Submission of Entities to be executed
+    /// Svelto Add/Remove callbacks to be called
+    /// ISubmissionEngines to be executed
+    /// UECS engines to executed
+    /// Synchronizations engines to be executed (UECS To Svelto)
+    /// </summary>
     [Sequenced(nameof(JobifiedSveltoEngines.SveltoOverUECS))]
     public class SveltoOverUECSEnginesGroup: IJobifiedEngine
     {
         public SveltoOverUECSEnginesGroup(EnginesRoot enginesRoot)
         {
-            DBC.ECS.Check.Require(enginesRoot.scheduler is ISimpleEntitiesSubmissionScheduler, "The Engines root must use a EntitiesSubmissionScheduler scheduler implementation");
+            DBC.ECS.Check.Require(enginesRoot.scheduler is SimpleEntitiesSubmissionScheduler, "The Engines root must use a EntitiesSubmissionScheduler scheduler implementation");
 
-            CreateUnityECSWorldForSvelto(enginesRoot.scheduler as ISimpleEntitiesSubmissionScheduler, enginesRoot);
+            CreateUnityECSWorldForSvelto(enginesRoot.scheduler as SimpleEntitiesSubmissionScheduler, enginesRoot);
         }
 
         public World world { get; private set; }
 
-        void CreateUnityECSWorldForSvelto(ISimpleEntitiesSubmissionScheduler scheduler, EnginesRoot enginesRoot)
+        void CreateUnityECSWorldForSvelto(SimpleEntitiesSubmissionScheduler scheduler, EnginesRoot enginesRoot)
         {
             world = new World("Svelto<>UECS world");
 
@@ -29,7 +45,6 @@ namespace Svelto.ECS.Extensions.Unity
             //This is the UECS group that takes care of all the UECS systems that creates entities
             //it also submits Svelto entities
             _sveltoUecsEntitiesSubmissionGroup = new SveltoUECSEntitiesSubmissionGroup(scheduler, world);
-            enginesRoot.AddEngine(_sveltoUecsEntitiesSubmissionGroup);
             //This is the group that handles the UECS sync systems that copy the svelto entities values to UECS entities
             _syncSveltoToUecsGroup = new SyncSveltoToUECSGroup();
             enginesRoot.AddEngine(_syncSveltoToUecsGroup);
@@ -45,7 +60,7 @@ namespace Svelto.ECS.Extensions.Unity
         public JobHandle Execute(JobHandle inputDeps)
         {
             //this is a sync point, there won't be pending jobs after this
-            _sveltoUecsEntitiesSubmissionGroup.Execute(inputDeps);
+            _sveltoUecsEntitiesSubmissionGroup.SubmitEntities(inputDeps);
 
             //Mixed explicit job dependency and internal automatic ECS dependency system
             //Write in to UECS entities so the UECS dependencies react on the components touched
@@ -59,7 +74,7 @@ namespace Svelto.ECS.Extensions.Unity
             return _syncUecsToSveltoGroup.Execute(handle);
         }
 
-        public void AddUECSSubmissionEngine(IUECSSubmissionEngine spawnUnityEntityOnSveltoEntityEngine)
+        public void AddUECSSubmissionEngine(SubmissionEngine spawnUnityEntityOnSveltoEntityEngine)
         {
             _sveltoUecsEntitiesSubmissionGroup.Add(spawnUnityEntityOnSveltoEntityEngine);
             _enginesRoot.AddEngine(spawnUnityEntityOnSveltoEntityEngine);
@@ -94,7 +109,6 @@ namespace Svelto.ECS.Extensions.Unity
         SyncSveltoToUECSGroup             _syncSveltoToUecsGroup;
         SyncUECSToSveltoGroup             _syncUecsToSveltoGroup;
         EnginesRoot                       _enginesRoot;
-
     }
 }
 #endif

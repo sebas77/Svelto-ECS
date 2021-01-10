@@ -1,4 +1,4 @@
-#if UNITY_2019_2_OR_NEWER
+#if UNITY_JOBS
 using System;
 using Unity.Jobs;
 

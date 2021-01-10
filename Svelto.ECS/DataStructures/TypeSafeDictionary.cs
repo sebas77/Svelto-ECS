@@ -15,21 +15,21 @@ namespace Svelto.ECS.Internal
         internal static readonly bool IsUnmanaged =
             _type.IsUnmanagedEx() && (typeof(IEntityViewComponent).IsAssignableFrom(_type) == false);
 
-        SveltoDictionary<uint, TValue, NativeStrategy<FasterDictionaryNode<uint>>, ManagedStrategy<TValue>,
+        SveltoDictionary<uint, TValue, NativeStrategy<SveltoDictionaryNode<uint>>, ManagedStrategy<TValue>,
             ManagedStrategy<int>> implMgd;
 
         //used directly by native methods
-        internal SveltoDictionary<uint, TValue, NativeStrategy<FasterDictionaryNode<uint>>, NativeStrategy<TValue>,
+        internal SveltoDictionary<uint, TValue, NativeStrategy<SveltoDictionaryNode<uint>>, NativeStrategy<TValue>,
             NativeStrategy<int>> implUnmgd;
 
         public TypeSafeDictionary(uint size)
         {
             if (IsUnmanaged)
-                implUnmgd = new SveltoDictionary<uint, TValue, NativeStrategy<FasterDictionaryNode<uint>>,
+                implUnmgd = new SveltoDictionary<uint, TValue, NativeStrategy<SveltoDictionaryNode<uint>>,
                     NativeStrategy<TValue>, NativeStrategy<int>>(size);
             else
             {
-                implMgd = new SveltoDictionary<uint, TValue, NativeStrategy<FasterDictionaryNode<uint>>,
+                implMgd = new SveltoDictionary<uint, TValue, NativeStrategy<SveltoDictionaryNode<uint>>,
                     ManagedStrategy<TValue>, ManagedStrategy<int>>(size);
             }
         }
@@ -106,8 +106,9 @@ namespace Svelto.ECS.Internal
 
                 //this can be optimized, should pass all the entities and not restart the process for each one
                 foreach (var value in implUnmgd)
-                    ExecuteEnginesAddOrSwapCallbacksOnSingleEntity(entityComponentEnginesDB, ref typeSafeDictionary[value.Key]
-                                                        , fromGroup, in profiler, new EGID(value.Key, toGroup));
+                    ExecuteEnginesAddOrSwapCallbacksOnSingleEntity(entityComponentEnginesDB
+                                                                 , ref typeSafeDictionary[value.Key], fromGroup
+                                                                 , in profiler, new EGID(value.Key, toGroup));
             }
             else
             {
@@ -115,8 +116,9 @@ namespace Svelto.ECS.Internal
 
                 //this can be optimized, should pass all the entities and not restart the process for each one
                 foreach (var value in implMgd)
-                    ExecuteEnginesAddOrSwapCallbacksOnSingleEntity(entityComponentEnginesDB, ref typeSafeDictionary[value.Key]
-                                                        , fromGroup, in profiler, new EGID(value.Key, toGroup));
+                    ExecuteEnginesAddOrSwapCallbacksOnSingleEntity(entityComponentEnginesDB
+                                                                 , ref typeSafeDictionary[value.Key], fromGroup
+                                                                 , in profiler, new EGID(value.Key, toGroup));
             }
         }
 

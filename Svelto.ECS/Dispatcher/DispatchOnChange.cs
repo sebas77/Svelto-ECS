@@ -8,7 +8,9 @@ namespace Svelto.ECS
         {
             _value = initialValue;
         }
-        
+
+        public DispatchOnChange(EGID senderID, Action<EGID, T> callback) : base(senderID, callback) {}
+
         public new T value
         {
             set

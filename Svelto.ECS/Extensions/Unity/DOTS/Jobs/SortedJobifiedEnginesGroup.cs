@@ -1,4 +1,4 @@
-#if UNITY_2019_1_OR_NEWER
+#if UNITY_JOBS
 using Svelto.DataStructures;
 using Unity.Jobs;
 using Svelto.Common;

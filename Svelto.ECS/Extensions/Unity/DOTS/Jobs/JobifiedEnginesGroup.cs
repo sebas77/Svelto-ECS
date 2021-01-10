@@ -1,24 +1,10 @@
-#if UNITY_2019_2_OR_NEWER
+#if UNITY_JOBS
 using Svelto.Common;
 using Svelto.DataStructures;
 using Unity.Jobs;
 
 namespace Svelto.ECS.Extensions.Unity
 {
-    public interface IJobifiedEngine : IEngine
-    {
-        JobHandle Execute(JobHandle inputDeps);
-        
-        string name { get; }
-    }
-    
-    public interface IJobifiedEngine<T> : IEngine
-    {
-        JobHandle Execute(JobHandle inputDeps, ref T _param);
-        
-        string name { get; }
-    }
-    
     public interface IJobifiedGroupEngine<T> : IJobifiedEngine<T>
     { }
     /// <summary>
@@ -58,7 +44,7 @@ namespace Svelto.ECS.Extensions.Unity
             return combinedHandles;
         }
 
-        protected internal void Add(Interface engine)
+        public void Add(Interface engine)
         {
             _engines.Add(engine);
         }
@@ -66,7 +52,7 @@ namespace Svelto.ECS.Extensions.Unity
         public string name => _name;
 
         protected readonly FasterList<Interface> _engines;
-        readonly           string                        _name;
+        readonly           string                _name;
     }
     
     public abstract class JobifiedEnginesGroup<Interface, Param>: IJobifiedGroupEngine<Param> where Interface : class, IJobifiedEngine<Param>

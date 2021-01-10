@@ -14,7 +14,7 @@ namespace Svelto.ECS.Serialization
             _implementors = implementors;
         }
 
-        public EntityComponentInitializer BuildDeserializedEntity
+        public EntityInitializer BuildDeserializedEntity
         (EGID egid, ISerializationData serializationData, ISerializableEntityDescriptor entityDescriptor
        , int serializationType, IEntitySerialization entitySerialization, IEntityFactory factory
        , bool enginesRootIsDeserializationOnly)

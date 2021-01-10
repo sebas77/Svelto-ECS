@@ -48,12 +48,12 @@ namespace Svelto.ECS
         {
             var dictionary =
                 new SveltoDictionary<ExclusiveGroupStruct, SveltoDictionary<uint, T, 
-                            NativeStrategy<FasterDictionaryNode<uint>>,
+                            NativeStrategy<SveltoDictionaryNode<uint>>,
                             NativeStrategy<T>, 
                             NativeStrategy<int>>, 
-                        NativeStrategy<FasterDictionaryNode<ExclusiveGroupStruct>>, 
+                        NativeStrategy<SveltoDictionaryNode<ExclusiveGroupStruct>>, 
                         NativeStrategy<SveltoDictionary<uint, T, 
-                            NativeStrategy<FasterDictionaryNode<uint>>, 
+                            NativeStrategy<SveltoDictionaryNode<uint>>, 
                             NativeStrategy<T>,
                             NativeStrategy<int>>>,
                     NativeStrategy<int>> 

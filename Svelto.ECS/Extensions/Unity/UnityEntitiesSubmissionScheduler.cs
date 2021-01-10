@@ -1,4 +1,5 @@
 #if UNITY_5 || UNITY_5_3_OR_NEWER
+using System;
 using Object = UnityEngine.Object;
 using System.Collections;
 using UnityEngine;
@@ -57,7 +58,10 @@ namespace Svelto.ECS.Schedulers.Unity
         void SubmitEntities()
         {
             if (paused == false)
-                _onTick.Invoke();
+            {
+                var enumerator = _onTick.Invoke(UInt32.MaxValue);
+                while (enumerator.MoveNext()) ;
+            }
         }
 
         protected internal override EnginesRoot.EntitiesSubmitter onTick

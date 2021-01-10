@@ -29,7 +29,7 @@ namespace Svelto.ECS.Serialization
         void DeserializeEntity(EGID egid, ISerializationData serializationData, int serializationType);
         
         /// <summary>
-        /// Deserialize a serializationData and copy directly to an previously created EntityComponentInitializer
+        /// Deserialize a serializationData and copy directly to an previously created EntityInitializer
         /// </summary>
         /// <param name="serializationData"></param>
         /// <param name="entityDescriptor"></param>
@@ -37,7 +37,7 @@ namespace Svelto.ECS.Serialization
         /// <param name="serializationType"></param>
         void DeserializeEntityComponents(ISerializationData serializationData,
             ISerializableEntityDescriptor entityDescriptor,
-            ref EntityComponentInitializer initializer, int serializationType);
+            ref EntityInitializer initializer, int serializationType);
 
         /// <summary>
         /// Contrary to the other Deserialize methods that assume that the entity exists, this method is used to deserialise
@@ -47,7 +47,7 @@ namespace Svelto.ECS.Serialization
         /// <param name="serializationData"></param>
         /// <param name="serializationType"></param>
         /// <returns></returns>
-        EntityComponentInitializer DeserializeNewEntity(EGID egid, ISerializationData serializationData,
+        EntityInitializer DeserializeNewEntity(EGID egid, ISerializationData serializationData,
                                                         int serializationType);
 
         /// <summary>

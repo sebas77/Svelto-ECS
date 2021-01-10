@@ -19,15 +19,12 @@ namespace Svelto.ECS
             public void Deconstruct(out EntityCollection<T1> collection, out ExclusiveGroupStruct group)
             {
                 collection = this.collection;
-                group = this.@group;
+                group      = this.@group;
             }
         }
-        
-        public AllGroupsEnumerable(EntitiesDB db)
-        {
-            _db = db;
-        }
-        
+
+        public AllGroupsEnumerable(EntitiesDB db) { _db = db; }
+
         public ref struct GroupsIterator
         {
             public GroupsIterator(EntitiesDB db) : this()
@@ -40,13 +37,14 @@ namespace Svelto.ECS
                 //attention, the while is necessary to skip empty groups
                 while (_db.MoveNext() == true)
                 {
-                    FasterDictionary<ExclusiveGroupStruct, ITypeSafeDictionary>.KeyValuePairFast group = _db.Current;
+                    var group = _db.Current;
                     ITypeSafeDictionary<T1> typeSafeDictionary = @group.Value as ITypeSafeDictionary<T1>;
-                    
-                    if (typeSafeDictionary.count == 0) continue;
+
+                    if (typeSafeDictionary.count == 0)
+                        continue;
 
                     _array.collection = new EntityCollection<T1>(typeSafeDictionary.GetValues(out var count), count);
-                    _array.@group = new ExclusiveGroupStruct(group.Key);
+                    _array.@group     = new ExclusiveGroupStruct(group.Key);
 
                     return true;
                 }
@@ -56,15 +54,15 @@ namespace Svelto.ECS
 
             public GroupCollection Current => _array;
 
-            FasterDictionary<ExclusiveGroupStruct, ITypeSafeDictionary>.FasterDictionaryKeyValueEnumerator _db; 
+            SveltoDictionary<ExclusiveGroupStruct, ITypeSafeDictionary,
+                ManagedStrategy<SveltoDictionaryNode<ExclusiveGroupStruct>>, ManagedStrategy<ITypeSafeDictionary>,
+                ManagedStrategy<int>>.SveltoDictionaryKeyValueEnumerator _db;
+
             GroupCollection _array;
         }
 
-        public GroupsIterator GetEnumerator()
-        {
-            return new GroupsIterator(_db);
-        }
+        public GroupsIterator GetEnumerator() { return new GroupsIterator(_db); }
 
-        readonly EntitiesDB       _db;
+        readonly EntitiesDB _db;
     }
 }

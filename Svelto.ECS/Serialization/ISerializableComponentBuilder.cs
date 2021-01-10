@@ -10,7 +10,7 @@ namespace Svelto.ECS.Serialization
         void Deserialize(uint id, ITypeSafeDictionary dictionary, ISerializationData serializationData
                        , int serializationType);
 
-        void Deserialize(ISerializationData serializationData, in EntityComponentInitializer initializer
+        void Deserialize(ISerializationData serializationData, in EntityInitializer initializer
                        , int serializationType);
     }
 }

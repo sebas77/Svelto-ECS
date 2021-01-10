@@ -9,7 +9,6 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Svelto.Common;
 
 namespace Svelto.ECS.DataStructures

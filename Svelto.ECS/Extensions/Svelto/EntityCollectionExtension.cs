@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using Svelto.DataStructures;
 using Svelto.ECS.Hybrid;
@@ -46,10 +45,10 @@ namespace Svelto.ECS
                                             where T3 : unmanaged, IEntityComponent
                                             where T4 : unmanaged, IEntityComponent
         {
-            buffer1 = ec.Item1._nativedBuffer;
-            buffer2 = ec.Item2._nativedBuffer;
-            buffer3 = ec.Item3._nativedBuffer;
-            buffer4 = ec.Item4._nativedBuffer;
+            buffer1 = ec.buffer1._nativedBuffer;
+            buffer2 = ec.buffer2._nativedBuffer;
+            buffer3 = ec.buffer3._nativedBuffer;
+            buffer4 = ec.buffer4._nativedBuffer;
             count   = (int) ec.count;
         }
 
@@ -188,10 +187,10 @@ namespace Svelto.ECS
                                             where T3 : unmanaged, IEntityComponent
                                             where T4 : struct, IEntityViewComponent
         {
-            buffer1 = ec.Item1._nativedBuffer;
-            buffer2 = ec.Item2._nativedBuffer;
-            buffer3 = ec.Item3._nativedBuffer;
-            buffer4 = ec.Item4._managedBuffer;
+            buffer1 = ec.buffer1._nativedBuffer;
+            buffer2 = ec.buffer2._nativedBuffer;
+            buffer3 = ec.buffer3._nativedBuffer;
+            buffer4 = ec.buffer4._managedBuffer;
             count   = (int) ec.count;
         }
     }
@@ -229,8 +228,8 @@ namespace Svelto.ECS
             where T3 : unmanaged, IEntityComponent
             where T4 : unmanaged, IEntityComponent
         {
-            return new BT<NB<T1>, NB<T2>, NB<T3>, NB<T4>>(ec.Item1._nativedBuffer, ec.Item2._nativedBuffer
-                                                        , ec.Item3._nativedBuffer, ec.Item4._nativedBuffer, ec.count);
+            return new BT<NB<T1>, NB<T2>, NB<T3>, NB<T4>>(ec.buffer1._nativedBuffer, ec.buffer2._nativedBuffer
+                                                        , ec.buffer3._nativedBuffer, ec.buffer4._nativedBuffer, ec.count);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -241,10 +240,10 @@ namespace Svelto.ECS
                                             where T3 : struct, IEntityViewComponent
                                             where T4 : struct, IEntityViewComponent
         {
-            buffer1 = ec.Item1._nativedBuffer;
-            buffer2 = ec.Item2._nativedBuffer;
-            buffer3 = ec.Item3._managedBuffer;
-            buffer4 = ec.Item4._managedBuffer;
+            buffer1 = ec.buffer1._nativedBuffer;
+            buffer2 = ec.buffer2._nativedBuffer;
+            buffer3 = ec.buffer3._managedBuffer;
+            buffer4 = ec.buffer4._managedBuffer;
             count   = (int) ec.count;
         }
     }

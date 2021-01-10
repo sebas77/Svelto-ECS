@@ -1,0 +1,69 @@
+name: Svelto.ECS Nuget Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Reason'
+        default: 'Manual workflow triggering'
+  push:
+    branches:
+      - master
+    paths:
+      - ./Svelto.ECS/version.json
+
+jobs:
+  build:
+    env:
+      PKG_NAME: Svelto.ECS
+      ECS_VERSION_JSON: ./Svelto.ECS/version.json
+      COMMON_VERSION_JSON: ./Svelto.Common/version.json
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: init submodules
+      run: git submodule update --init
+
+    - name: get preparation tools
+      run: git clone https://github.com/Ujinjinjin/upm-preparator.git --branch v1.0.12 --single-branch
+
+    - name: create temp directory
+      run: mkdir temp
+    
+    - name: create solution file
+      run: dotnet new sln -n "${PKG_NAME}" -o temp/
+    
+    # Svelto.Common
+    - name: get Svelto.Common version
+      run: python3 upm-preparator/version.py --version-file "${COMMON_VERSION_JSON}" --env-file "${GITHUB_ENV}"
+
+    - name: create temp Svelto.Common directory
+      run: mkdir "temp/com.sebaslab.svelto.common@${PKG_VERSION}"
+    
+    - name: copy Svelto.Common files to temp directory
+      run: cp -r Svelto.Common/* "temp/com.sebaslab.svelto.common@${PKG_VERSION}"
+    
+    - name: add Svelto.Common to solution
+      run: dotnet sln "temp/${PKG_NAME}.sln" add "temp/com.sebaslab.svelto.common@${PKG_VERSION}/Svelto.Common.csproj"
+    
+    # Svelto.ECS
+    - name: get Svelto.ECS version
+      run: python3 upm-preparator/version.py --version-file "${ECS_VERSION_JSON}" --env-file "${GITHUB_ENV}"
+
+    - name: create temp Svelto.ECS directory
+      run: mkdir "temp/com.sebaslab.svelto.ecs@${PKG_VERSION}"
+    
+    - name: copy Svelto.ECS files to temp directory
+      run: cp -r Svelto.ECS/* "temp/com.sebaslab.svelto.ecs@${PKG_VERSION}"
+    
+    - name: add Svelto.ECS to solution
+      run: dotnet sln "temp/${PKG_NAME}.sln" add "temp/com.sebaslab.svelto.ecs@${PKG_VERSION}/Svelto.ECS.csproj"
+
+    - name: build nuget package
+      run: dotnet pack /p:Version=${PKG_VERSION} -o . "temp/com.sebaslab.svelto.ecs@${PKG_VERSION}/Svelto.ECS.csproj"
+
+    - name: publish nuget package
+      run: dotnet nuget push ${{ env.PKG_NAME }}.${{ env.PKG_VERSION }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

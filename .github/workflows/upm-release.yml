@@ -1,19 +1,23 @@
 name: Svelto.ECS UPM Release
 
 on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Reason'
+        default: 'Manual workflow triggering'
   push:
     branches:
       - master
     paths:
-      - version.json
-      - ".github/workflows/upm-release.yml"
+      - ./Svelto.ECS/version.json
 
 jobs:
   build:
     env:
       PKG_ROOT: Svelto.ECS
-      VERSION_JSON: version.json
-      PKG_JSON: package.json
+      VERSION_JSON: ./Svelto.ECS/version.json
+      PKG_JSON: ./Svelto.ECS/package.json
       LICENSE: LICENSE
       README: README.md
 

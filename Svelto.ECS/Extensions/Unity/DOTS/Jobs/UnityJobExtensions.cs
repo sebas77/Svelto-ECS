@@ -1,34 +1,10 @@
-#if UNITY_NATIVE
+#if UNITY_JOBS
 using System;
 using Svelto.ECS.Extensions.Unity;
 using Unity.Jobs;
 
 namespace Svelto.ECS
 {
-#if UNITY_JOBS    
-    public static class UnityJobExtensions
-    {
-        public static JobHandle ScheduleParallel
-            <JOB>(this JOB job, uint iterations, JobHandle inputDeps) where JOB: struct, IJobParallelForBatch
-        {
-            if (iterations == 0)
-                return inputDeps;
-            
-            var innerloopBatchCount = ProcessorCount.BatchSize((uint) iterations);
-            return job.ScheduleBatch((int)iterations, innerloopBatchCount, inputDeps);
-        }
-        
-        public static JobHandle ScheduleParallel
-            <JOB>(this JOB job, int iterations, JobHandle inputDeps) where JOB: struct, IJobParallelForBatch
-        {
-            if (iterations <= 0)
-                return inputDeps;
-            
-            var innerloopBatchCount = ProcessorCount.BatchSize((uint) iterations);
-            return job.ScheduleBatch((int)iterations, innerloopBatchCount, inputDeps);
-        }
-    }
-#endif    
     public static class UnityJobExtensions2
     {
         public static JobHandle ScheduleDispose

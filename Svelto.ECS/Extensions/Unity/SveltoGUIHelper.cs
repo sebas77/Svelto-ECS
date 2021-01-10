@@ -86,7 +86,7 @@ namespace Svelto.ECS.Extensions.Unity
             return s;
         }
         
-        public static EntityComponentInitializer Create<T>(EGID ID, Transform contextHolder, IEntityFactory factory, 
+        public static EntityInitializer Create<T>(EGID ID, Transform contextHolder, IEntityFactory factory, 
                                                            out T holder, bool searchImplementorsInChildren = false)
             where T : MonoBehaviour, IEntityDescriptorHolder
         {
@@ -100,7 +100,7 @@ namespace Svelto.ECS.Extensions.Unity
             return factory.BuildEntity(ID, holder.GetDescriptor(), implementors);
         }
 
-        public static EntityComponentInitializer Create<T>(EGID ID, Transform contextHolder,
+        public static EntityInitializer Create<T>(EGID ID, Transform contextHolder,
                                                            IEntityFactory factory, bool searchImplementorsInChildren = false)
             where T : MonoBehaviour, IEntityDescriptorHolder
         {

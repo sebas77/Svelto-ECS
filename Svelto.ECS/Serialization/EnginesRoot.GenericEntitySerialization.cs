@@ -33,7 +33,7 @@ namespace Svelto.ECS
                 }
             }
 
-            public EntityComponentInitializer DeserializeNewEntity
+            public EntityInitializer DeserializeNewEntity
                 (EGID egid, ISerializationData serializationData, int serializationType)
             {
                 //todo: SerializableEntityHeader may be needed to be customizable
@@ -67,7 +67,7 @@ namespace Svelto.ECS
 
             public void DeserializeEntityComponents
             (ISerializationData serializationData, ISerializableEntityDescriptor entityDescriptor
-           , ref EntityComponentInitializer initializer, int serializationType)
+           , ref EntityInitializer initializer, int serializationType)
             {
                 foreach (var serializableEntityBuilder in entityDescriptor.entitiesToSerialize)
                 {

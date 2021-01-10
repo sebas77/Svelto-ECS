@@ -1,4 +1,7 @@
 #if UNITY_ECS
+using System.Collections;
+using Svelto.Common;
+using Svelto.DataStructures;
 using Svelto.ECS.Schedulers;
 using Unity.Entities;
 using Unity.Jobs;
@@ -15,22 +18,21 @@ namespace Svelto.ECS.Extensions.Unity
     /// solve external dependencies. External dependencies are tracked, but only linked to the UECS components operations
     /// With Dependency I cannot guarantee that an external container is used before previous jobs working on it are completed
     /// </summary>
-    public class SveltoUECSEntitiesSubmissionGroup : JobifiedEnginesGroup<IUECSSubmissionEngine>
+    public sealed class SveltoUECSEntitiesSubmissionGroup
     {
-        public SveltoUECSEntitiesSubmissionGroup
-            (ISimpleEntitiesSubmissionScheduler submissionScheduler, World UECSWorld)
+        public SveltoUECSEntitiesSubmissionGroup(SimpleEntitiesSubmissionScheduler submissionScheduler, World UECSWorld)
         {
             _submissionScheduler = submissionScheduler;
             _ECBSystem           = UECSWorld.CreateSystem<SubmissionEntitiesCommandBufferSystem>();
+            _engines             = new FasterList<SubmissionEngine>();
         }
 
-        public new void Execute(JobHandle jobHandle)
+        public void SubmitEntities(JobHandle jobHandle)
         {
-            //Sync Point as we must be sure that jobs that create/swap/remove entities are done
-            jobHandle.Complete();
-
             if (_submissionScheduler.paused)
                 return;
+            
+            jobHandle.Complete();
 
             //prepare the entity command buffer to be used by the registered engines
             var entityCommandBuffer = _ECBSystem.CreateCommandBuffer();
@@ -38,21 +40,40 @@ namespace Svelto.ECS.Extensions.Unity
             foreach (var system in _engines)
             {
                 system.ECB = entityCommandBuffer;
-                system.EM  = _ECBSystem.EntityManager;
             }
 
             //Submit Svelto Entities, calls Add/Remove/MoveTo that can be used by the IUECSSubmissionEngines
             _submissionScheduler.SubmitEntities();
 
-            //execute submission engines and complete jobs
-            base.Execute(default).Complete();
+            //execute submission engines and complete jobs because of this I don't need to do _ECBSystem.AddJobHandleForProducer(Dependency);
+            using (var profiler = new PlatformProfiler("SveltoUECSEntitiesSubmissionGroup"))
+            {
+                for (var index = 0; index < _engines.count; index++)
+                {
+                    ref var engine = ref _engines[index];
+                    using (profiler.Sample(engine.name))
+                    {
+                        jobHandle = engine.Execute(jobHandle);
+                    }
+                }
+            }
+
+            //Sync Point as we must be sure that jobs that create/swap/remove entities are done
+            jobHandle.Complete();
 
             //flush command buffer
             _ECBSystem.Update();
         }
+        
+        public void Add(SubmissionEngine engine)
+        {
+            _ECBSystem.World.AddSystem(engine);
+            _engines.Add(engine);
+        }
 
-        readonly ISimpleEntitiesSubmissionScheduler    _submissionScheduler;
+        readonly SimpleEntitiesSubmissionScheduler     _submissionScheduler;
         readonly SubmissionEntitiesCommandBufferSystem _ECBSystem;
+        readonly FasterList<SubmissionEngine>          _engines;
 
         [DisableAutoCreation]
         class SubmissionEntitiesCommandBufferSystem : EntityCommandBufferSystem { }

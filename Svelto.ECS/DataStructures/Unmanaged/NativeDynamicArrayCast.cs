@@ -9,7 +9,11 @@ namespace Svelto.ECS.DataStructures
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Count() => _array.Count<T>();
 
-        public int count => _array.Count<T>();
+        public int count
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _array.Count<T>();
+        }
 
         public ref T this[int index]
         {

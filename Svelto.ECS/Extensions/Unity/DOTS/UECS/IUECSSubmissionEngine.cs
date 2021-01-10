@@ -1,12 +1,25 @@
 #if UNITY_ECS
+using Svelto.Common;
 using Unity.Entities;
+using Unity.Jobs;
 
 namespace Svelto.ECS.Extensions.Unity
 {
-    public interface IUECSSubmissionEngine : IJobifiedEngine
+    public abstract class SubmissionEngine : SystemBase, IJobifiedEngine
     {
-        EntityCommandBuffer ECB { get; set;}
-        EntityManager EM { get; set;}
+        public JobHandle Execute(JobHandle inputDeps)
+        {
+            Dependency = JobHandle.CombineDependencies(Dependency, inputDeps);
+            
+            OnUpdate();
+            
+            return Dependency; 
+        }
+
+        public    EntityCommandBuffer ECB { get; internal set; }
+        protected EntityManager       EM  => this.EntityManager;
+
+        public string name => TypeToString.Name(this);
     }
 }
 #endif

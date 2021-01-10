@@ -7,24 +7,24 @@ namespace Svelto.ECS
     public struct NativeEGIDMultiMapper<T>:IDisposable where T : unmanaged, IEntityComponent
     {
         SveltoDictionary<ExclusiveGroupStruct, SveltoDictionary<uint, T, 
-                NativeStrategy<FasterDictionaryNode<uint>>,
+                NativeStrategy<SveltoDictionaryNode<uint>>,
                 NativeStrategy<T>, 
                 NativeStrategy<int>>, 
-            NativeStrategy<FasterDictionaryNode<ExclusiveGroupStruct>>, 
+            NativeStrategy<SveltoDictionaryNode<ExclusiveGroupStruct>>, 
             NativeStrategy<SveltoDictionary<uint, T, 
-                NativeStrategy<FasterDictionaryNode<uint>>, 
+                NativeStrategy<SveltoDictionaryNode<uint>>, 
                 NativeStrategy<T>,
                 NativeStrategy<int>>>,
             NativeStrategy<int>> _dic;
 
         public NativeEGIDMultiMapper
         (SveltoDictionary<ExclusiveGroupStruct, SveltoDictionary<uint, T, 
-                NativeStrategy<FasterDictionaryNode<uint>>,
+                NativeStrategy<SveltoDictionaryNode<uint>>,
                 NativeStrategy<T>, 
                 NativeStrategy<int>>, 
-            NativeStrategy<FasterDictionaryNode<ExclusiveGroupStruct>>, 
+            NativeStrategy<SveltoDictionaryNode<ExclusiveGroupStruct>>, 
             NativeStrategy<SveltoDictionary<uint, T, 
-                NativeStrategy<FasterDictionaryNode<uint>>, 
+                NativeStrategy<SveltoDictionaryNode<uint>>, 
                 NativeStrategy<T>,
                 NativeStrategy<int>>>,
             NativeStrategy<int>> dictionary)
