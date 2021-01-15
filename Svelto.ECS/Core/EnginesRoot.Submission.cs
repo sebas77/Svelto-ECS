@@ -148,7 +148,8 @@ namespace Svelto.ECS
                             {
                                 var groupID = groupToSubmit.Key;
                                 var groupDB = _groupEntityComponentsDB[groupID];
-
+//entityComponentsToSubmit is the array of components found in the groupID per component type. 
+//if there are N entities to submit, and M components type to add for each entity, this foreach will run NxM times. 
                                 foreach (var entityComponentsToSubmit in _groupedEntityToAdd.other[groupID])
                                 {
                                     var realDic = groupDB[new RefWrapperType(entityComponentsToSubmit.Key)];
@@ -156,7 +157,7 @@ namespace Svelto.ECS
                                     entityComponentsToSubmit.Value.ExecuteEnginesAddOrSwapCallbacks(_reactiveEnginesAddRemove, realDic,
                                         null, new ExclusiveGroupStruct(groupID), in profiler);
                                     
-                                    ++numberOfOperations;
+                                    numberOfOperations += entityComponentsToSubmit.Value.count;
 
                                     if (numberOfOperations >= maxNumberOfOperations)
                                     {

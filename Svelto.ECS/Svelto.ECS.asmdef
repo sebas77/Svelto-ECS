@@ -19,6 +19,11 @@
     "defineConstraints": [],
     "versionDefines": [
         {
+            "name": "Unity",
+            "expression": "2019.3",
+            "define": "UNITY_JOBS"
+        },
+        {
             "name": "com.unity.entities",
             "expression": "",
             "define": "UNITY_ECS"
@@ -49,8 +54,13 @@
             "define": "UNITY_NATIVE"
         },
         {
-            "name": "Unity",
-            "expression": "2019.3.0",
+            "name": "com.unity.burst",
+            "expression": "",
+            "define": "UNITY_JOBS"
+        },
+        {
+            "name": "com.sebaslab.svelto.ecs",
+            "expression": "",
             "define": "UNITY_JOBS"
         }
     ],

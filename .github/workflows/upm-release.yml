@@ -10,14 +10,14 @@ on:
     branches:
       - master
     paths:
-      - ./Svelto.ECS/version.json
+      - Svelto.ECS/version.json
 
 jobs:
   build:
     env:
       PKG_ROOT: Svelto.ECS
-      VERSION_JSON: ./Svelto.ECS/version.json
-      PKG_JSON: ./Svelto.ECS/package.json
+      VERSION_JSON: Svelto.ECS/version.json
+      PKG_JSON: Svelto.ECS/package.json
       LICENSE: LICENSE
       README: README.md
 

@@ -1,7 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file. I created this file with Svelto.ECS version 3.1.
 
-## [0.3.1]
+## [3.1.3]
+
+### Fixed
+
+* bumped dependency of Svelto.Common due to an important fix there.
+
+## [3.1.2]
+
+### Changed
+
+* improved async entity submission code (still experimental)
+* improved native entity operations debug info
+
+## [3.1.1]
+
+### Changed
+
+* SubmissionEngine didn't need the EntityManager property, so it has been removed
+
+## [3.1.0]
 
 ### Changed
 

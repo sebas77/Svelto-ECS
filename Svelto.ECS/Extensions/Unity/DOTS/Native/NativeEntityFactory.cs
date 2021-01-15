@@ -5,9 +5,6 @@ namespace Svelto.ECS
 {
     public readonly struct NativeEntityFactory
     {
-        readonly AtomicNativeBags _addOperationQueue;
-        readonly int             _index;
-
         internal NativeEntityFactory(AtomicNativeBags addOperationQueue, int index)
         {
             _index             = index;
@@ -36,6 +33,9 @@ namespace Svelto.ECS
 
             return new NativeEntityInitializer(unsafeBuffer, index);
         }
+        
+        readonly AtomicNativeBags _addOperationQueue;
+        readonly int              _index;
     }
 }
 #endif

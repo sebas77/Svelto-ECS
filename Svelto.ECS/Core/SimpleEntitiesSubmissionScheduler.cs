@@ -20,6 +20,17 @@ namespace Svelto.ECS.Schedulers
                     yield return null;
             }
         }
+        
+        public IEnumerator SubmitEntitiesAsync(uint maxNumberOfOperationsPerFrame)
+        {
+            if (paused == false)
+            {
+                var submitEntities = _onTick.Invoke(maxNumberOfOperationsPerFrame);
+                
+                while (submitEntities.MoveNext())
+                    yield return null;
+            }
+        }
 
         public void SubmitEntities()
         {

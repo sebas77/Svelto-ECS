@@ -21,8 +21,10 @@ namespace Svelto.ECS
             _initializer = initializer;
         }
 
+        public bool isUnmanaged => IS_UNMANAGED;
+
         public void BuildEntityAndAddToList(ref ITypeSafeDictionary dictionary, EGID egid,
-            IEnumerable<object> implementors)
+                                            IEnumerable<object> implementors)
         {
             if (dictionary == null) 
                 dictionary = TypeSafeDictionaryFactory<T>.Create();
@@ -77,7 +79,7 @@ namespace Svelto.ECS
             IS_ENTITY_VIEW_COMPONENT = typeof(IEntityViewComponent).IsAssignableFrom(ENTITY_COMPONENT_TYPE);
             HAS_EGID = typeof(INeedEGID).IsAssignableFrom(ENTITY_COMPONENT_TYPE);
             ENTITY_COMPONENT_NAME = ENTITY_COMPONENT_TYPE.ToString();
-            var IS_UNMANAGED = ENTITY_COMPONENT_TYPE.IsUnmanagedEx();
+            IS_UNMANAGED = ENTITY_COMPONENT_TYPE.IsUnmanagedEx();
 
             if (IS_UNMANAGED)
                 EntityComponentIDMap.Register<T>(new Filler<T>());
@@ -102,9 +104,10 @@ namespace Svelto.ECS
         public static readonly   bool HAS_EGID;
         internal static readonly bool IS_ENTITY_VIEW_COMPONENT;
 
-        static readonly          T      DEFAULT_IT;
-        static readonly          string ENTITY_COMPONENT_NAME;
-        
+        static readonly T      DEFAULT_IT;
+        static readonly string ENTITY_COMPONENT_NAME;
+        static          bool   IS_UNMANAGED;
+
         /// <summary>
         /// Note: this static class will hold forever the references of the entities implementors. These references
         /// are not even cleared when the engines root is destroyed, as they are static references.

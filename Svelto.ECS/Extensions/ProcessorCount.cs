@@ -2,7 +2,7 @@ using System;
 
 namespace Svelto.ECS
 {
-    internal static class ProcessorCount
+    public static class ProcessorCount
     {
         public static readonly int   processorCount = Environment.ProcessorCount;
         

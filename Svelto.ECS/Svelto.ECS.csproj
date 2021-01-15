@@ -7,6 +7,7 @@
   <PropertyGroup>
     <PackageId>Svelto.ECS</PackageId>
     <Authors>sebas77</Authors>
+	<RepositoryUrl>https://github.com/sebas77/Svelto.ECS</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -19,7 +20,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\com.sebaslab.svelto.common@3.1.0\Svelto.Common.csproj" />
+    <ProjectReference Include="..\com.sebaslab.svelto.common\Svelto.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Memory" Version="4.5.2" />

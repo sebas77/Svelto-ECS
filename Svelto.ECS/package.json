@@ -3,13 +3,13 @@
   "category": "Svelto",
   "description": "Svelto ECS C# Lightweight Data Oriented Entity Component System Framework",
   "dependencies": {
-    "com.sebaslab.svelto.common": "3.1.0"
+    "com.sebaslab.svelto.common": "3.1.3"
   },
   "keywords": [
     "svelto"
   ],
   "name": "com.sebaslab.svelto.ecs",
-  "version": "3.1.0",
+  "version": "3.1.3",
   "type": "library",
   "unity": "2019.3"
 }

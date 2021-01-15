@@ -147,9 +147,9 @@ namespace Svelto.ECS
                 _groupFilters.Clear();
 
 #if UNITY_NATIVE
-                _addOperationQueue.Dispose();
-                _removeOperationQueue.Dispose();
-                _swapOperationQueue.Dispose();
+                _nativeAddOperationQueue.Dispose();
+                _nativeRemoveOperationQueue.Dispose();
+                _nativeSwapOperationQueue.Dispose();
 #endif
                 _groupEntityComponentsDB.Clear();
                 _groupsPerEntity.Clear();
