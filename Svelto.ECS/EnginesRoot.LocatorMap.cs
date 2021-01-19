@@ -13,24 +13,18 @@ namespace Svelto.ECS
         {
             // Check if we need to create a new EntityLocator or whether we can recycle an existing one.s
             EntityReference reference;
-            if (_nextEntityId == _entityLocatorMap.count)
+            if (_nextReferenceIndex == _entityLocatorMap.count)
             {
                 _entityLocatorMap.Add(new EntityLocatorMapElement(egid));
-                reference = new EntityReference(_nextEntityId++);
+                reference = new EntityReference(_nextReferenceIndex++);
             }
             else
             {
-                ref var element = ref _entityLocatorMap[_nextEntityId];
-                reference = new EntityReference(_nextEntityId, element.version);
+                ref var element = ref _entityLocatorMap[_nextReferenceIndex];
+                reference = new EntityReference(_nextReferenceIndex, element.version);
                 // The recycle entities form a linked list, using the egid.entityID to store the next element.
-                _nextEntityId = element.egid.entityID;
+                _nextReferenceIndex = element.egid.entityID;
                 element.egid = egid;
-            }
-
-            // When we create a new one there is nothing to recycle anymore, so we need to update the last recycle entityId.
-            if (_nextEntityId == _entityLocatorMap.count)
-            {
-                _lastEntityId = (uint)_entityLocatorMap.count;
             }
 
             // Update reverse map from egid to locator.
@@ -81,23 +75,12 @@ namespace Svelto.ECS
             }
 #endif
 
-            // Check if this is the first recycled element.
-            if (_lastEntityId == _entityLocatorMap.count)
-            {
-                _nextEntityId = locator.uniqueID;
-            }
-            // Otherwise add it as the last recycled element.
-            else
-            {
-                _entityLocatorMap[_lastEntityId].egid = new EGID(locator.uniqueID, 0);
-            }
-
             // Invalidate the entity locator element by bumping its version and setting the egid to point to a unexisting element.
-            _entityLocatorMap[locator.uniqueID].egid = new EGID((uint)_entityLocatorMap.count, 0);
+            _entityLocatorMap[locator.uniqueID].egid = new EGID(_nextReferenceIndex, 0);
             _entityLocatorMap[locator.uniqueID].version++;
 
             // Mark the element as the last element used.
-            _lastEntityId = locator.uniqueID;
+            _nextReferenceIndex = locator.uniqueID;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -183,8 +166,7 @@ namespace Svelto.ECS
             return false;
         }
 
-        uint _nextEntityId;
-        uint _lastEntityId;
+        uint _nextReferenceIndex;
         readonly FasterList<EntityLocatorMapElement> _entityLocatorMap;
         readonly FasterDictionary<uint, FasterDictionary<uint, EntityReference>> _egidToLocatorMap;
     }
